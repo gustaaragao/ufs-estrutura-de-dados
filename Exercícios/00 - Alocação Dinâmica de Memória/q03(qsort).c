@@ -55,7 +55,7 @@ int compareClassificao(const void *x_void, const void *y_void)
     {
         return 1;
     }
-    
+
     return 0;
 }
 
@@ -101,6 +101,12 @@ int main()
     scanf("%d", &tamanhoVetor);
 
     vetorAluno = malloc(tamanhoVetor * sizeof(Aluno));
+
+    if (vetorAluno == NULL)
+    {
+        printf("Falha na alocacao!");
+        return 1;
+    }
 
     receberAlunos(vetorAluno, tamanhoVetor);
 

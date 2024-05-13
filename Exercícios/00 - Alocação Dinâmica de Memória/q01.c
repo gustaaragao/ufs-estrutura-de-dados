@@ -16,40 +16,64 @@ TODO:
 - Criar uma função filtrarMultiplos() -> Vetor
 */
 
-int main()
+void filtrarMultiplos(const int *vetor, int tamanhoVetor, int valor)
 {
-    int tamanhoVetor, *vetor = NULL, soma = 0;
-    // Passo 1: Receber o tamanho do Vetor
-    printf("Digite o tamanho do vetor: ");
-    scanf("%d", &tamanhoVetor);
-
-    // Passo 2: Alocar Dinamicamente o vetor
-    vetor = (int*) calloc(tamanhoVetor, sizeof(int));
-    if (vetor == NULL) 
+    printf("\nValores multiplos de %d: ", valor);
+    for (int i = 0; i < tamanhoVetor; i++)
     {
-        printf("\nERRO - MEMORIA NAO ALOCADA DINAMICAMENTE");
-        return;
+        if (vetor[i] % valor == 0)
+        {
+            printf("%d ", vetor[i]);
+        }
     }
+    printf("\n");
+}
 
-    // Passo 3: Guardar os valores digitados pelo usuário no Vetor
-    for (int i=0; i<tamanhoVetor; i++)
+float calcularMedia(const int *vetor, int tamanhoVetor)
+{
+    int soma = 0;
+
+    for (int i = 0; i < tamanhoVetor; i++)
     {
-        printf("\nDigite um valor: ");
-        scanf("%d", &vetor[i]);
         soma += vetor[i];
     }
 
-    // Passo 4: Calcular a média
-    float media; 
-    media = (float) soma / tamanhoVetor;
-    printf("\nMedia = %f", media);
-    
-    // Passo 5: Mostrar os valores digitados múltiplos de 6
-    printf("\nValores multiplos de 6:");
-    for (int i=0; i<tamanhoVetor; i++)
+    return (float)soma / tamanhoVetor;
+}
+
+void receberValores(int *vetor, int tamanhoVetor)
+{
+    for (int i = 0; i < tamanhoVetor; i++)
     {
-        if (vetor[i] % 6 == 0) printf(" %d", vetor[i]);
+        printf("\nDigite um valor: ");
+        scanf("%d", &vetor[i]);
     }
+}
+
+int main()
+{
+    int tamanhoVetor = 0;
+    int *vetor = NULL;
+
+    printf("Digite o tamanho do vetor: ");
+    scanf("%d", &tamanhoVetor);
+
+    vetor = (int *)calloc(tamanhoVetor, sizeof(int));
+
+    if (vetor == NULL)
+    {
+        printf("\nFalha na Alocacao!");
+        return 1;
+    }
+
+    receberValores(vetor, tamanhoVetor);
+
+    // Calcular a média
+    float media = calcularMedia(vetor, tamanhoVetor);
+    printf("\nMedia = %.2f", media);
+
+    // Mostrar os valores digitados múltiplos de 6
+    filtrarMultiplos(vetor, tamanhoVetor, 6);
 
     free(vetor);
 

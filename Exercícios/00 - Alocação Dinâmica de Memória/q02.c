@@ -91,7 +91,7 @@ int main()
     printf("\nMedia de Peso dos Atletas: %.2f", mediaPeso);
 
     int quantidadeMenoresDeIdade = contarMenoresDeIdade(vetorAtleta, tamanhoVetor);
-    printf("\nQuantidade de Menores de Idade: %d", quantidadeMenoresDeIdade);
+    printf("\nQuantidade de Menores de Idade: %d\n", quantidadeMenoresDeIdade);
 
     free(vetorAtleta);
 

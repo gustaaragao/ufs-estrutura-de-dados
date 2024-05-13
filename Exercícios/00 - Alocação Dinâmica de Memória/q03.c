@@ -8,8 +8,7 @@ Obs: uma vez que os dados sejam digitados, o usuário deve poder ver as listagen
 */
 
 /* MINI DOCUMENTACAO
-Essa implementacao foi feita sem utilizar o qsort... Decidi por fim implementar dois algoritmos distintos de ordenação para efetuar
-a listagem proposta.
+Essa implementacao foi feita sem utilizar o qsort... Decidi por fim implementar por conta própria um algoritmo de ordenacao para resolver o problema.
 
 Por fim, de resto o programa é literalmente o mesmo do apresentado no arquivo "q03(qsort).c"
 */
@@ -26,12 +25,39 @@ typedef struct Aluno
 } Aluno;
 
 void ordenarOrdemClassificacao(Aluno *vetorAluno, int tamanhoVetor)
+// Implementação do Algoritmo *Selection Sort*
 {
+    for (int i = 0; i < tamanhoVetor; i++)
+    {
+        int idMaior = i;
+        for (int j = i + 1; j < tamanhoVetor; j++)
+        {
+            if (vetorAluno[j].media > vetorAluno[idMaior].media)
+                idMaior = j;
+        }
+
+        Aluno temp = vetorAluno[i];
+        vetorAluno[i] = vetorAluno[idMaior];
+        vetorAluno[idMaior] = temp;
+    }
 }
 
-
 void ordenarOrdemAlfabetica(Aluno *vetorAluno, int tamanhoVetor)
+// Implementação do Algoritmo *Insertion Sort*
 {
+    for (int i = 1; i < tamanhoVetor; i++)
+    {
+        int j = i;
+
+        while (j > 0 && strcmp(vetorAluno[j].nome, vetorAluno[j - 1].nome) < 0)
+        {
+            Aluno temp = vetorAluno[j];
+            vetorAluno[j] = vetorAluno[j - 1];
+            vetorAluno[j - 1] = temp;
+
+            j = j - 1;
+        }
+    }
 }
 
 void mostrarAlunos(const Aluno *vetorAluno, int tamanhoVetor)
@@ -69,6 +95,12 @@ int main()
 
     vetorAluno = malloc(tamanhoVetor * sizeof(Aluno));
 
+    if (vetorAluno == NULL)
+    {
+        printf("Falha na alocacao!");
+        return 1;
+    }
+
     receberAlunos(vetorAluno, tamanhoVetor);
 
     printf("\nListagem Alunos:");
@@ -97,14 +129,14 @@ int main()
         // Listagem Ordem Alfabetica
         case 1:
             printf("\nListagem Alunos em Ordem Alfabetica:");
-            // TODO
+            ordenarOrdemAlfabetica(vetorAluno, tamanhoVetor);
             mostrarAlunos(vetorAluno, tamanhoVetor);
             break;
 
         // Listagem Ordem Classificatoria
         case 2:
             printf("\nListagem Alunos em Ordem Classificatoria:");
-            // TODO
+            ordenarOrdemClassificacao(vetorAluno, tamanhoVetor);
             mostrarAlunos(vetorAluno, tamanhoVetor);
             break;
 
