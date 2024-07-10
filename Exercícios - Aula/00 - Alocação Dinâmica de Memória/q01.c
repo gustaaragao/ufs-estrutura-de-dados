@@ -9,13 +9,6 @@ Exiba a média dos números lidos e os múltiplos de 6 digitados.
 #include <stdio.h>
 #include <stdlib.h>
 
-/*
-TODO:
-- Criar uma função calcularMedia()
-
-- Criar uma função filtrarMultiplos() -> Vetor
-*/
-
 void filtrarMultiplos(const int *vetor, int tamanhoVetor, int valor)
 {
     printf("\nValores multiplos de %d: ", valor);
@@ -38,7 +31,7 @@ float calcularMedia(const int *vetor, int tamanhoVetor)
         soma += vetor[i];
     }
 
-    return (float)soma / tamanhoVetor;
+    return (float) soma / tamanhoVetor;
 }
 
 void receberValores(int *vetor, int tamanhoVetor)
