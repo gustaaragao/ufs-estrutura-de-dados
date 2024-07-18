@@ -12,3 +12,8 @@ Método Babilônico (ou de Heron):
 
 4. Devolva Yn
 */
+
+int main()
+{
+    return 0;
+}
