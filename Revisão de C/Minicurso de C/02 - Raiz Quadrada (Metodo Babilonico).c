@@ -13,7 +13,32 @@ Método Babilônico (ou de Heron):
 4. Devolva Yn
 */
 
+#include <stdio.h>
+#include <math.h>
+
+#define ERRO 1e-12
+
+double raiz_quadrada(double x) {
+    double y = x, anterior;
+    do {
+        anterior = y;
+        y = (y + x / y) / 2;
+    } while (fabs(anterior - y) > ERRO);
+
+    return y;
+}
+
+
 int main()
 {
+    double x, resultado;
+
+    printf("Digite um valor para calcular a raiz quadrada: ");
+    scanf("%lf", &x);
+
+    resultado = raiz_quadrada(x);
+
+    printf("\nResultado = %lf", resultado);
+    
     return 0;
 }
