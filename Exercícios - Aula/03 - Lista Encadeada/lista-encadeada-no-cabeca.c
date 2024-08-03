@@ -7,19 +7,19 @@ typedef struct Elemento {
     struct Elemento *proximo;
 } Elemento;
 
-typedef struct ListaEncadeada {
+typedef struct ListaEncadeadaNoCabeca {
     Elemento *inicio;
     Elemento *fim;
     uint32_t tamanho;
-} ListaEncadeada;
+} ListaEncadeadaNoCabeca;
 
 /**
  * Inicializa uma lista encadeada vazia.
  * 
- * @return ListaEncadeada* Ponteiro para a nova lista encadeada.
+ * @return ListaEncadeadaNoCabeca* Ponteiro para a nova lista encadeada.
  */
-ListaEncadeada* inicializar_lista() {
-    ListaEncadeada *novaLista = malloc(sizeof(ListaEncadeada));
+ListaEncadeadaNoCabeca* inicializar_lista() {
+    ListaEncadeadaNoCabeca *novaLista = malloc(sizeof(ListaEncadeadaNoCabeca));
 
     if (novaLista == NULL) {
         printf("[ERRO - ALOCACAO DE MEMORIA]: NAO FOI POSSIVEL ALOCAR MEMORIA PARA LISTA.\n");
@@ -38,7 +38,7 @@ ListaEncadeada* inicializar_lista() {
  * 
  * @param lista Ponteiro para a lista a ser destruída.
  */
-void destruir_lista(ListaEncadeada *lista) {
+void destruir_lista(ListaEncadeadaNoCabeca *lista) {
     Elemento *elemento = lista->inicio;
 
     while (elemento != NULL) {
@@ -57,7 +57,7 @@ void destruir_lista(ListaEncadeada *lista) {
  * @param novoValor Valor a ser adicionado.
  * @return int Retorna 0 se bem-sucedido, 1 se houve erro de alocação.
  */
-int adicionar_elemento_final(ListaEncadeada *lista, uint32_t novoValor) {
+int adicionar_elemento_final(ListaEncadeadaNoCabeca *lista, uint32_t novoValor) {
     Elemento *novoElemento = malloc(sizeof(Elemento));
 
     if (novoElemento == NULL) {
@@ -89,7 +89,7 @@ int adicionar_elemento_final(ListaEncadeada *lista, uint32_t novoValor) {
  * @param novoValor Valor a ser adicionado.
  * @return int Retorna 0 se bem-sucedido, 1 se houve erro de alocação.
  */
-int adicionar_elemento_inicio(ListaEncadeada *lista, uint32_t novoValor) {
+int adicionar_elemento_inicio(ListaEncadeadaNoCabeca *lista, uint32_t novoValor) {
     Elemento *novoElemento = malloc(sizeof(Elemento));
 
     if (novoElemento == NULL) {
@@ -117,7 +117,7 @@ int adicionar_elemento_inicio(ListaEncadeada *lista, uint32_t novoValor) {
  * @param valor Valor a ser inserido.
  * @return int 0 em caso de sucesso, 1 em caso de erro (como alocação de memória).
  */
-int adicionar_elemento_lista_ordenada(ListaEncadeada *lista, uint32_t valor) {
+int adicionar_elemento_lista_ordenada(ListaEncadeadaNoCabeca *lista, uint32_t valor) {
     Elemento *novoElemento = malloc(sizeof(Elemento));
     if (novoElemento == NULL) {
         printf("[ERRO - ALOCACAO DE MEMORIA]: NAO FOI POSSIVEL ALOCAR MEMORIA PARA NOVO ELEMENTO.\n");
@@ -155,7 +155,7 @@ int adicionar_elemento_lista_ordenada(ListaEncadeada *lista, uint32_t valor) {
  * @param lista Ponteiro para a lista encadeada.
  * @return int Retorna 0 se bem-sucedido, 1 se a lista está vazia.
  */
-int remover_elemento_fim(ListaEncadeada *lista) {
+int remover_elemento_fim(ListaEncadeadaNoCabeca *lista) {
     if (lista->inicio == NULL) {
         printf("[ERRO] - LISTA VAZIA.\n");
         return 1;
@@ -189,7 +189,7 @@ int remover_elemento_fim(ListaEncadeada *lista) {
  * @param lista Ponteiro para a lista encadeada.
  * @return int Retorna 0 se bem-sucedido, 1 se a lista está vazia.
  */
-int remover_elemento_inicio(ListaEncadeada *lista) {
+int remover_elemento_inicio(ListaEncadeadaNoCabeca *lista) {
     if (lista->inicio == NULL) {
         printf("[ERRO] - LISTA VAZIA.\n");
         return 1;
@@ -215,7 +215,7 @@ int remover_elemento_inicio(ListaEncadeada *lista) {
  * @param valor Valor a ser pesquisado.
  * @return int Índice do valor encontrado ou -1 se não encontrado.
  */
-int pesquisar_valor(ListaEncadeada *lista, uint32_t valor) {
+int pesquisar_valor(ListaEncadeadaNoCabeca *lista, uint32_t valor) {
     int indice = 0;
     Elemento *elemento = lista->inicio;
 
@@ -236,7 +236,7 @@ int pesquisar_valor(ListaEncadeada *lista, uint32_t valor) {
  * @param lista Ponteiro para a lista encadeada.
  * @return uint32_t Tamanho da lista.
  */
-uint32_t tamanho_lista(ListaEncadeada *lista) {
+uint32_t tamanho_lista(ListaEncadeadaNoCabeca *lista) {
     return lista->tamanho;
 }
 
@@ -248,18 +248,15 @@ uint32_t tamanho_lista(ListaEncadeada *lista) {
  * @param indice Índice onde o elemento será inserido.
  * @return int Retorna 0 se bem-sucedido, 1 se o índice está fora dos limites.
  */
-int adicionar_elemento_por_indice(ListaEncadeada *lista, uint32_t valor, uint32_t indice) {
-    if (indice > lista->tamanho) {
-        // O índice está fora dos limites
-        return 1;
-    }
-
-    if (indice == lista->tamanho) {
-        // Adiciona no final
-        return adicionar_elemento_final(lista, valor);
+int adicionar_elemento_por_indice(ListaEncadeadaNoCabeca *lista, uint32_t valor, uint32_t indice) {
+        if (indice >= lista->tamanho) {
+        // Inserção no final
+        adicionar_elemento_final(lista, valor);
+        return 0;
     } else if (indice == 0) {
-        // Adiciona no início
-        return adicionar_elemento_inicio(lista, valor);
+        // Inserção no início
+        adicionar_elemento_inicio(lista, valor);
+        return 0;
     } else {
         // Adiciona no meio
         Elemento *novoElemento = malloc(sizeof(Elemento));
@@ -293,7 +290,7 @@ int adicionar_elemento_por_indice(ListaEncadeada *lista, uint32_t valor, uint32_
  * @param indice Índice do elemento a ser removido.
  * @return int Retorna 0 se bem-sucedido, 1 se o índice está fora dos limites.
  */
-int remover_elemento_por_indice(ListaEncadeada *lista, uint32_t indice) {
+int remover_elemento_por_indice(ListaEncadeadaNoCabeca *lista, uint32_t indice) {
     if (indice >= lista->tamanho) {
         printf("[ERRO] - INDICE FORA DA FAIXA DA LISTA.\n");
         return 1;
@@ -332,7 +329,7 @@ int remover_elemento_por_indice(ListaEncadeada *lista, uint32_t indice) {
  * @param indice Índice do elemento a ser atualizado.
  * @return int Retorna 0 se bem-sucedido, 1 se o índice está fora dos limites.
  */
-int atualizar_valor(ListaEncadeada *lista, uint32_t valor, uint32_t indice) {
+int atualizar_valor(ListaEncadeadaNoCabeca *lista, uint32_t valor, uint32_t indice) {
     if (indice >= lista->tamanho) {
         printf("[ERRO] - INDICE FORA DA FAIXA DA LISTA.\n");
         return 1;
@@ -350,30 +347,48 @@ int atualizar_valor(ListaEncadeada *lista, uint32_t valor, uint32_t indice) {
 }
 
 /**
+ * Troca o valor armazenado em dois elementos da lista encadeada.
+ *
+ * @param a Ponteiro para o primeiro elemento.
+ * @param b Ponteiro para o segundo elemento.
+ */
+void trocar(Elemento *a, Elemento *b) {
+    uint32_t temp = a->valor;
+    a->valor = b->valor;
+    b->valor = temp;
+}
+
+/**
  * Ordena a lista encadeada em ordem crescente usando o algoritmo Insertion Sort.
  * 
  * @param lista Ponteiro para a lista encadeada.
  */
-void ordenar_lista(ListaEncadeada *lista) {
-    ListaEncadeada *listaOrdenada = inicializar_lista();
+void ordenar_lista(ListaEncadeadaNoCabeca *lista) {
+    if (lista == NULL || lista->inicio == NULL) return;
 
-    if (listaOrdenada == NULL) {
-        printf("[ERRO] - FALHA AO CRIAR LISTA AUXILIAR PARA ORDENACAO.\n");
-        return;
+    int trocado;
+    do {
+        trocado = 0;
+        Elemento *atual = lista->inicio;
+        Elemento *anterior = NULL;
+
+        while (atual != NULL && atual->proximo != NULL) {
+            if (atual->valor > atual->proximo->valor) {
+                // Troca os valores
+                trocar(atual, atual->proximo);
+                trocado = 1;
+            }
+            anterior = atual;
+            atual = atual->proximo;
+        }
+    } while (trocado);
+
+    // Atualize o fim da lista
+    Elemento *atual = lista->inicio;
+    while (atual->proximo != NULL) {
+        atual = atual->proximo;
     }
-
-    Elemento *elementoAtual = lista->inicio;
-
-    while (elementoAtual != NULL) {
-        adicionar_elemento_lista_ordenada(listaOrdenada, elementoAtual->valor);
-        elementoAtual = elementoAtual->proximo;
-    }
-
-    destruir_lista(lista);
-    lista->inicio = listaOrdenada->inicio;
-    lista->fim = listaOrdenada->fim;
-    lista->tamanho = listaOrdenada->tamanho;
-    free(listaOrdenada);
+    lista->fim = atual;
 }
 
 /**
@@ -381,7 +396,7 @@ void ordenar_lista(ListaEncadeada *lista) {
  * 
  * @param lista Ponteiro para a lista encadeada.
  */
-void imprimir_lista(ListaEncadeada *lista) {
+void imprimir_lista(ListaEncadeadaNoCabeca *lista) {
     Elemento *elemento = lista->inicio;
 
     printf("[");
@@ -397,7 +412,7 @@ void imprimir_lista(ListaEncadeada *lista) {
 }
 
 int main() {
-    ListaEncadeada *lista = inicializar_lista();
+    ListaEncadeadaNoCabeca *lista = inicializar_lista();
     if (lista == NULL) {
         return 1;
     }
