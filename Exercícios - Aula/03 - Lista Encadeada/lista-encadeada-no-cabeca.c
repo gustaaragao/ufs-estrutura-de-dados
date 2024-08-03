@@ -9,6 +9,8 @@ typedef struct Elemento {
 
 typedef struct ListaEncadeada {
     Elemento *inicio;
+    Elemento *fim;
+    uint32_t tamanho;
 } ListaEncadeada;
 
 /**
@@ -24,7 +26,10 @@ ListaEncadeada* inicializar_lista() {
         return NULL;
     }
 
-    novaLista->inicio = NULL; // Define o início da lista como NULL, indicando que está vazia
+    novaLista->inicio = NULL;
+    novaLista->fim = NULL;
+    novaLista->tamanho = 0;
+
     return novaLista;
 }
 
@@ -38,11 +43,11 @@ void destruir_lista(ListaEncadeada *lista) {
 
     while (elemento != NULL) {
         Elemento *proximoElemento = elemento->proximo;
-        free(elemento); // Libera a memória de cada elemento
+        free(elemento);
         elemento = proximoElemento;
     }
 
-    free(lista); // Libera a memória da estrutura da lista
+    free(lista);
 }
 
 /**
@@ -63,18 +68,17 @@ int adicionar_elemento_final(ListaEncadeada *lista, uint32_t novoValor) {
     novoElemento->valor = novoValor;
     novoElemento->proximo = NULL;
 
-    if (lista->inicio == NULL) {
+    if (lista->fim == NULL) {
         // A lista está vazia
         lista->inicio = novoElemento;
+        lista->fim = novoElemento;
     } else {
-        // Busca o último elemento
-        Elemento *elemento = lista->inicio;
-        while (elemento->proximo != NULL) {
-            elemento = elemento->proximo;
-        }
-        elemento->proximo = novoElemento;
+        // Adiciona no final
+        lista->fim->proximo = novoElemento;
+        lista->fim = novoElemento;
     }
 
+    lista->tamanho++;
     return 0;
 }
 
@@ -97,6 +101,12 @@ int adicionar_elemento_inicio(ListaEncadeada *lista, uint32_t novoValor) {
     novoElemento->proximo = lista->inicio;
     lista->inicio = novoElemento;
 
+    if (lista->fim == NULL) {
+        // A lista estava vazia
+        lista->fim = novoElemento;
+    }
+
+    lista->tamanho++;
     return 0;
 }
 
@@ -120,6 +130,9 @@ int adicionar_elemento_lista_ordenada(ListaEncadeada *lista, uint32_t valor) {
     if (lista->inicio == NULL || lista->inicio->valor >= valor) {
         novoElemento->proximo = lista->inicio;
         lista->inicio = novoElemento;
+        if (lista->fim == NULL) {
+            lista->fim = novoElemento;
+        }
     } else {
         Elemento *atual = lista->inicio;
         while (atual->proximo != NULL && atual->proximo->valor < valor) {
@@ -127,8 +140,12 @@ int adicionar_elemento_lista_ordenada(ListaEncadeada *lista, uint32_t valor) {
         }
         novoElemento->proximo = atual->proximo;
         atual->proximo = novoElemento;
+        if (novoElemento->proximo == NULL) {
+            lista->fim = novoElemento;
+        }
     }
 
+    lista->tamanho++;
     return 0;
 }
 
@@ -153,12 +170,16 @@ int remover_elemento_fim(ListaEncadeada *lista) {
     }
 
     if (elementoAnterior == NULL) {
-        lista->inicio = NULL; // A lista só tinha um elemento
+        // Só havia um elemento
+        lista->inicio = NULL;
+        lista->fim = NULL;
     } else {
-        elementoAnterior->proximo = NULL; // Remove o último elemento
+        elementoAnterior->proximo = NULL;
+        lista->fim = elementoAnterior;
     }
 
     free(elemento);
+    lista->tamanho--;
     return 0;
 }
 
@@ -176,8 +197,14 @@ int remover_elemento_inicio(ListaEncadeada *lista) {
 
     Elemento *primeiroElemento = lista->inicio;
     lista->inicio = primeiroElemento->proximo;
-    free(primeiroElemento);
 
+    if (lista->inicio == NULL) {
+        // A lista ficou vazia
+        lista->fim = NULL;
+    }
+
+    free(primeiroElemento);
+    lista->tamanho--;
     return 0;
 }
 
@@ -210,15 +237,7 @@ int pesquisar_valor(ListaEncadeada *lista, uint32_t valor) {
  * @return uint32_t Tamanho da lista.
  */
 uint32_t tamanho_lista(ListaEncadeada *lista) {
-    uint32_t tamanho = 0;
-    Elemento *elemento = lista->inicio;
-
-    while (elemento != NULL) {
-        tamanho++;
-        elemento = elemento->proximo;
-    }
-
-    return tamanho;
+    return lista->tamanho;
 }
 
 /**
@@ -230,18 +249,19 @@ uint32_t tamanho_lista(ListaEncadeada *lista) {
  * @return int Retorna 0 se bem-sucedido, 1 se o índice está fora dos limites.
  */
 int adicionar_elemento_por_indice(ListaEncadeada *lista, uint32_t valor, uint32_t indice) {
-    uint32_t tamanho = tamanho_lista(lista);
+    if (indice > lista->tamanho) {
+        // O índice está fora dos limites
+        return 1;
+    }
 
-    if (indice >= tamanho) {
-        // Inserção no final
-        adicionar_elemento_final(lista, valor);
-        return 0;
+    if (indice == lista->tamanho) {
+        // Adiciona no final
+        return adicionar_elemento_final(lista, valor);
     } else if (indice == 0) {
-        // Inserção no início
-        adicionar_elemento_inicio(lista, valor);
-        return 0;
+        // Adiciona no início
+        return adicionar_elemento_inicio(lista, valor);
     } else {
-        // Inserção no meio
+        // Adiciona no meio
         Elemento *novoElemento = malloc(sizeof(Elemento));
         if (novoElemento == NULL) {
             printf("[ERRO - ALOCACAO DE MEMORIA]: NAO FOI POSSIVEL ALOCAR MEMORIA PARA NOVO ELEMENTO.\n");
@@ -261,10 +281,10 @@ int adicionar_elemento_por_indice(ListaEncadeada *lista, uint32_t valor, uint32_
         novoElemento->proximo = elemento;
         elementoAnterior->proximo = novoElemento;
 
+        lista->tamanho++;
         return 0;
     }
 }
-
 
 /**
  * Remove um elemento de um índice específico da lista.
@@ -274,17 +294,14 @@ int adicionar_elemento_por_indice(ListaEncadeada *lista, uint32_t valor, uint32_
  * @return int Retorna 0 se bem-sucedido, 1 se o índice está fora dos limites.
  */
 int remover_elemento_por_indice(ListaEncadeada *lista, uint32_t indice) {
-    int tamanho = tamanho_lista(lista);
-
-    if (indice >= tamanho) {
+    if (indice >= lista->tamanho) {
         printf("[ERRO] - INDICE FORA DA FAIXA DA LISTA.\n");
         return 1;
     }
 
     if (indice == 0) {
-        Elemento *primeiroElemento = lista->inicio;
-        lista->inicio = primeiroElemento->proximo;
-        free(primeiroElemento);
+        // Remove o primeiro elemento
+        return remover_elemento_inicio(lista);
     } else {
         Elemento *elemento = lista->inicio;
         Elemento *elementoAnterior = NULL;
@@ -296,10 +313,15 @@ int remover_elemento_por_indice(ListaEncadeada *lista, uint32_t indice) {
         }
 
         elementoAnterior->proximo = elemento->proximo;
-        free(elemento);
-    }
+        if (elemento->proximo == NULL) {
+            // Atualiza o fim da lista se necessário
+            lista->fim = elementoAnterior;
+        }
 
-    return 0;
+        free(elemento);
+        lista->tamanho--;
+        return 0;
+    }
 }
 
 /**
@@ -311,9 +333,7 @@ int remover_elemento_por_indice(ListaEncadeada *lista, uint32_t indice) {
  * @return int Retorna 0 se bem-sucedido, 1 se o índice está fora dos limites.
  */
 int atualizar_valor(ListaEncadeada *lista, uint32_t valor, uint32_t indice) {
-    int tamanho = tamanho_lista(lista);
-
-    if (indice >= tamanho) {
+    if (indice >= lista->tamanho) {
         printf("[ERRO] - INDICE FORA DA FAIXA DA LISTA.\n");
         return 1;
     }
@@ -351,6 +371,8 @@ void ordenar_lista(ListaEncadeada *lista) {
 
     destruir_lista(lista);
     lista->inicio = listaOrdenada->inicio;
+    lista->fim = listaOrdenada->fim;
+    lista->tamanho = listaOrdenada->tamanho;
     free(listaOrdenada);
 }
 
