@@ -219,7 +219,7 @@ void imprimir_lista(ListaSequencial *lista)
 }
 
 /**
- * Destrói a lista sequencial e libera a memória alocada.
+ * Libera a memória alocada.
  *
  * @param lista Ponteiro para a lista sequencial a ser destruída.
  */
