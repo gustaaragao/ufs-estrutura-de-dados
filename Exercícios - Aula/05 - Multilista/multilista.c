@@ -1,12 +1,11 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Definição das estruturas
 typedef struct Aluno
 {
-    uint16_t matricula;
+    int matricula;
     char* nome;
     struct Aluno *proximo;
 } Aluno;
@@ -15,12 +14,12 @@ typedef struct ListaAlunos
 {
     Aluno *inicio;
     Aluno *final;
-    uint32_t quantidade;
+    int quantidade;
 } ListaAlunos;
 
 typedef struct Disciplina
 {
-    uint8_t codigo;
+    int codigo;
     char* nome;
     ListaAlunos *matriculados;
     struct Disciplina *proximo;
@@ -30,7 +29,7 @@ typedef struct ListaDisciplinas
 {
     Disciplina *inicio;
     Disciplina *fim;
-    uint32_t quantidade;
+    int quantidade;
 } ListaDisciplinas;
 
 // Função para inicializar a lista de disciplinas
@@ -51,7 +50,7 @@ ListaDisciplinas* inicializar_lista_disciplinas()
 }
 
 // Função para criar uma nova disciplina
-int criar_disciplina(char *nome, uint8_t codigo, ListaDisciplinas *listaDisciplinas)
+int criar_disciplina(char *nome, int codigo, ListaDisciplinas *listaDisciplinas)
 {
     // Verifica se já existe uma disciplina com esse código
     Disciplina *atual = listaDisciplinas->inicio;
@@ -110,7 +109,7 @@ int criar_disciplina(char *nome, uint8_t codigo, ListaDisciplinas *listaDiscipli
 }
 
 // Função para matricular um aluno em uma disciplina
-int matricular_aluno_na_disciplina(uint8_t codigoDisciplina, char *nomeAluno, uint16_t matricula, ListaDisciplinas *listaDisciplinas)
+int matricular_aluno_na_disciplina(int codigoDisciplina, char *nomeAluno, int matricula, ListaDisciplinas *listaDisciplinas)
 {
     Disciplina *disciplinaAlvo = listaDisciplinas->inicio;
 
@@ -153,7 +152,7 @@ int matricular_aluno_na_disciplina(uint8_t codigoDisciplina, char *nomeAluno, ui
     return 1;
 }
 
-int excluir_aluno_da_disciplina(uint8_t codigoDisciplina, uint16_t matricula, ListaDisciplinas *listaDisciplinas)
+int excluir_aluno_da_disciplina(int codigoDisciplina, int matricula, ListaDisciplinas *listaDisciplinas)
 {
     Disciplina *disciplinaAlvo = listaDisciplinas->inicio;
 
@@ -265,28 +264,61 @@ void exibir_lista_disciplinas_com_alunos(ListaDisciplinas *listaDisciplinas)
 int main()
 {
     ListaDisciplinas *listaDisciplinas = inicializar_lista_disciplinas();
-    
-    criar_disciplina("Estrutura de Dados", 100, listaDisciplinas);
-    criar_disciplina("Programacao Orientada a Objetos", 101, listaDisciplinas);
-    criar_disciplina("Linguagens Formais e Computabilidade", 102, listaDisciplinas);
+    int opcao;
+    int codigoDisciplina;
+    char nomeAluno[50];
+    char nomeDisciplina[50];
+    int matricula;
 
-    matricular_aluno_na_disciplina(100, "Gustavo", 1, listaDisciplinas);
-    matricular_aluno_na_disciplina(100, "Henrique", 2, listaDisciplinas);
-    matricular_aluno_na_disciplina(100, "Aragao", 3, listaDisciplinas);
+    do {
+        printf("\nMenu:\n");
+        printf("1. Criar disciplina\n");
+        printf("2. Matricular aluno em disciplina\n");
+        printf("3. Excluir aluno de disciplina\n");
+        printf("4. Exibir lista de disciplinas\n");
+        printf("5. Exibir lista de disciplinas com alunos matriculados\n");
+        printf("0. Sair\n");
+        printf("Escolha uma opcao: ");
+        scanf("%d", &opcao);
 
-    exibir_lista_disciplinas(listaDisciplinas);
+        switch (opcao) {
+            case 1:
+                printf("Digite o nome da disciplina: ");
+                scanf("%s", nomeDisciplina);
+                printf("Digite o codigo da disciplina: ");
+                scanf("%d", &codigoDisciplina);
+                criar_disciplina(nomeDisciplina, codigoDisciplina, listaDisciplinas);
+                break;
+            case 2:
+                printf("Digite o codigo da disciplina: ");
+                scanf("%d", &codigoDisciplina);
+                printf("Digite o nome do aluno: ");
+                scanf("%s", nomeAluno);
+                printf("Digite a matricula do aluno: ");
+                scanf("%d", &matricula);
+                matricular_aluno_na_disciplina(codigoDisciplina, nomeAluno, matricula, listaDisciplinas);
+                break;
+            case 3:
+                printf("Digite o codigo da disciplina: ");
+                scanf("%d", &codigoDisciplina);
+                printf("Digite a matricula do aluno: ");
+                scanf("%d", &matricula);
+                excluir_aluno_da_disciplina(codigoDisciplina, matricula, listaDisciplinas);
+                break;
+            case 4:
+                exibir_lista_disciplinas(listaDisciplinas);
+                break;
+            case 5:
+                exibir_lista_disciplinas_com_alunos(listaDisciplinas);
+                break;
+            case 0:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opcao invalida. Tente novamente.\n");
+                break;
+        }
+    } while (opcao != 0);
 
-    printf("\n");
-
-    exibir_lista_disciplinas_com_alunos(listaDisciplinas);
-
-    excluir_aluno_da_disciplina(100, 1, listaDisciplinas);
-
-    exibir_lista_disciplinas(listaDisciplinas);
-
-    printf("\n");
-
-    exibir_lista_disciplinas_com_alunos(listaDisciplinas);
-    
     return 0;
 }
