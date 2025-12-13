@@ -1,4 +1,4 @@
-# Lista linkada
+# Lista Encadeada - Rede Social
 
 A empresa de tecnologia Poxim Tech está
 desenvolvendo uma rede social para os melhores
